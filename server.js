@@ -5,10 +5,10 @@ const mongoose = require('mongoose')
 const categorySchema = require('./models/categoryModel') 
 const categoryRoute = require('./routes/categoryRoute')
 
-
+//password db : M9OzKCZ9TGwpCJi0
 const app = express()
 app.use(bodyParser.json())
-const url = "mongodb+srv://tokaismail1122:Toka1122@cluster0.ov5lu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const url = "mongodb+srv://tokaismail1122:M9OzKCZ9TGwpCJi0@cluster0.pygm4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 const connectToDatabase = async => {
     try{
