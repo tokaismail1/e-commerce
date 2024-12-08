@@ -4,6 +4,8 @@ const mongoose = require('mongoose')
 
 const categorySchema = require('./models/categoryModel') 
 const categoryRoute = require('./routes/categoryRoute')
+const userSchema = require('./models/userModel') 
+const userRoute = require('./routes/userRoute')
 
 //password db : M9OzKCZ9TGwpCJi0
 const app = express()
@@ -24,8 +26,12 @@ const connectToDatabase = async => {
 }
 
 connectToDatabase ()
-
+app.use('/api/users' , userRoute )
 app.use('/api/categories' , categoryRoute )
 
 
-app.listen(3010)
+
+const port = 3003;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
