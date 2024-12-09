@@ -48,17 +48,5 @@ const login = asyncHandler(async (req, res) => {
     }
 });
 
-const getAllUsers = asyncHandler(async (req, res) => {
-    try {
-        // Fetch all users from the database
-        const users = await userModel.find(); // Retrieves all users
-
-        // Return users in the response
-        res.status(200).json(users);
-    } catch (err) {
-        console.error("Error fetching users:", err);
-        res.status(500).json({ message: "Error fetching users", error: err.message });
-    }
-});
 // Export the functions
-module.exports = { register, login, getAllUsers };
+module.exports = { register, login, updateProfile,changePassword };
