@@ -1,4 +1,6 @@
 const Product = require('../models/productModel');
+const slugify = require('slugify');
+
 
 // Get all products
 exports.getProducts = async (req, res) => {
@@ -48,4 +50,61 @@ exports.addProduct = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Error adding product' });
     }
+};
+
+
+//update specific product
+exports.updateProduct =async function(req,res){
+    try{
+        const {id} = req.params;
+        const {price} = req.body;
+        const {stock_quantity} = req.body;
+        const product = await Product.findOneAndUpdate(
+            { _id: id },
+            {
+              price: price,
+              slug: slugify(price.toString()), // Create a slug for price
+              stock_quantity: stock_quantity,
+              stock_slug: slugify(stock_quantity.toString()) // Create a slug for stock_quantity
+            },
+            { new: true } // Return the updated document
+          );
+      
+
+        if(!product){  
+            // return res.status(404).json({ message: `No product found for ID: ${id}` });
+            return next(new ApiError(`No product found for ID: ${id}` , 404))
+            }
+        res.json({data : product})
+    }
+    catch(err){
+     
+        console.log("ERROR",err)
+        res.status(400).json({message:"something is wrong", err})
+       
+    }
+
+};
+
+//delete by id
+exports.deleteProduct = async function(req,res){
+    try{
+        const {id} = req.params;
+      
+        const product = await Product.findByIdAndDelete(id);
+
+        if(!product){
+            // return res.status(404).json({ message: `No category found for ID: ${id}` });
+            return next(new ApiError(`No product found for ID: ${id}`, 404))
+            
+            }
+           res.json({data : product , message : "product is removed"})
+    }
+    catch(err){
+     
+        console.log("ERROR",err)
+        res.status(400).json({message:"something is wrong", err})
+       
+    }
+
 };

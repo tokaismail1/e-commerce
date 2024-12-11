@@ -27,13 +27,13 @@ const connectToDatabase = () => {
 connectToDatabase ()
 app.use('/api/users' , userRoute )
 app.use('/api/product' , productRoute )
-app.use('/api/cart' , cartRoute )
+app.use('/api/cart', cartRoute); 
 
 
 
 
 
-const port = 3003;
+const port = 3004;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
