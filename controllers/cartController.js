@@ -1,15 +1,13 @@
-// cartController.js
 const Cart = require('../models/cartModel'); // Assuming Cart model is set up
 const Product = require('../models/productModel'); // Assuming Product model is set up
 const mongoose = require('mongoose');
 
-
-
+// Add product to cart
 exports.addToCart = async (req, res) => {
-  const { productId } = req.body;  // productId from request body
-  const userId = req.user._id;  // Use the decoded user ID  // Use the decoded user ID // userId from decoded JWT
+  const { productId } = req.body; // productId from request body
+  const userId = req.user._id; // Use the decoded user ID
 
-  // Make sure userId exists
+  // Ensure userId exists
   if (!userId) {
     return res.status(400).json({ message: 'User ID missing' });
   }
@@ -21,17 +19,21 @@ exports.addToCart = async (req, res) => {
     }
 
     // Create or update the cart
-    let cart = await Cart.findOne({ user_id: userId });  // Check cart for this userId
+    let cart = await Cart.findOne({ user_id: userId }); // Check cart for this userId
     if (!cart) {
+      // If cart doesn't exist, create a new one
       cart = new Cart({
-        user_id: userId,  // Ensure user_id is passed correctly
-        items: [{ product_id: new mongoose.Types.ObjectId(productId), quantity: 1 }]
+        user_id: userId, // Ensure user_id is passed correctly
+        items: [{ product_id: new mongoose.Types.ObjectId(productId), quantity: 1 }],
       });
     } else {
+      // Check if the product already exists in the cart
       const existingItemIndex = cart.items.findIndex(item => item.product_id.toString() === productId.toString());
       if (existingItemIndex === -1) {
+        // If not, add it
         cart.items.push({ product_id: new mongoose.Types.ObjectId(productId), quantity: 1 });
       } else {
+        // If it exists, update the quantity
         cart.items[existingItemIndex].quantity += 1;
       }
     }
@@ -44,12 +46,13 @@ exports.addToCart = async (req, res) => {
   }
 };
 
+// Remove product from cart
 exports.removeFromCart = async (req, res) => {
   const { productId } = req.body;
-  const userId = req.user.id; // user ID from JWT
+  const userId = req.user._id; // user ID from JWT
 
   try {
-    let cart = await Cart.findOne({ userId });
+    let cart = await Cart.findOne({ user_id: userId });
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
@@ -63,7 +66,7 @@ exports.removeFromCart = async (req, res) => {
     if (cart.items[itemIndex].quantity > 1) {
       cart.items[itemIndex].quantity -= 1;
     } else {
-      cart.items.splice(itemIndex, 1);  // Remove the item from the cart
+      cart.items.splice(itemIndex, 1); // Remove the item from the cart
     }
 
     await cart.save();
@@ -73,12 +76,13 @@ exports.removeFromCart = async (req, res) => {
     res.status(500).json({ message: 'Error removing product from cart', error: error.message });
   }
 };
-// cartController.js
+
+// Get all items in the cart
 exports.getCart = async (req, res) => {
-  const userId = req.user.id; // user ID from JWT
+  const userId = req.user._id; // user ID from JWT
 
   try {
-    let cart = await Cart.findOne({ userId }).populate('items.product_id');
+    let cart = await Cart.findOne({ user_id: userId }).populate('items.product_id');
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
